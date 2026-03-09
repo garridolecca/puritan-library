@@ -407,6 +407,114 @@ footer .footer-ornament{
 .back-top.visible{opacity:1;transform:translateY(0)}
 .back-top:hover{background:var(--gold);color:var(--bg-deep)}
 
+/* ── Reader Modal ── */
+.reader-overlay{
+  position:fixed;inset:0;z-index:10000;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(8px);
+  display:none;
+  flex-direction:column;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.reader-overlay.open{display:flex;opacity:1}
+.reader-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.8rem 1.5rem;
+  background:var(--bg-panel);
+  border-bottom:1px solid var(--border);
+  min-height:56px;
+}
+.reader-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;font-weight:600;
+  color:var(--cream);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  flex:1;margin-right:1rem;
+}
+.reader-author{
+  font-family:'Cinzel',serif;
+  font-size:0.7rem;color:var(--gold);
+  text-transform:uppercase;letter-spacing:0.1em;
+  margin-bottom:0.15rem;
+}
+.reader-actions{display:flex;gap:0.6rem;align-items:center;flex-shrink:0}
+.reader-btn{
+  font-family:'EB Garamond',serif;
+  font-size:0.85rem;
+  color:var(--cream-dim);
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:5px;
+  padding:0.4rem 0.9rem;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:0.4rem;
+  text-decoration:none;
+}
+.reader-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+.reader-close{
+  width:36px;height:36px;
+  background:none;border:1px solid var(--border);
+  border-radius:50%;
+  color:var(--cream-dim);
+  font-size:1.3rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+  margin-left:0.4rem;
+}
+.reader-close:hover{border-color:var(--accent-red);color:#c06050;background:rgba(139,58,42,0.15)}
+.reader-body{
+  flex:1;position:relative;
+  background:var(--bg-deep);
+}
+.reader-body iframe{
+  width:100%;height:100%;border:none;
+  background:#fff;
+}
+.reader-loading{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:var(--cream-muted);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;
+  gap:1rem;
+}
+.reader-spinner{
+  width:36px;height:36px;
+  border:3px solid var(--border);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.reader-fallback{
+  position:absolute;inset:0;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:2rem;
+  color:var(--cream-dim);
+  font-family:'Cormorant Garamond',serif;
+  gap:1rem;
+}
+.reader-fallback h3{font-size:1.4rem;color:var(--cream)}
+.reader-fallback p{max-width:400px;line-height:1.6;color:var(--cream-muted)}
+.reader-fallback .fallback-link{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:'EB Garamond',serif;
+  font-size:1.05rem;
+  color:var(--gold);
+  text-decoration:none;
+  padding:0.6rem 1.5rem;
+  border:1px solid var(--gold-dim);
+  border-radius:6px;
+  transition:all 0.25s;
+  margin-top:0.5rem;
+}
+.reader-fallback .fallback-link:hover{background:var(--gold);color:var(--bg-deep);border-color:var(--gold)}
+
 /* ── Animations ── */
 @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -422,6 +530,9 @@ footer .footer-ornament{
   .authors-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
   .toolbar{flex-direction:column;align-items:stretch}
   .filter-group{justify-content:center}
+  .reader-header{padding:0.6rem 1rem}
+  .reader-title{font-size:1rem}
+  .reader-btn span{display:none}
 }
 </style>
 </head>
@@ -509,6 +620,37 @@ footer .footer-ornament{
 
 <!-- Back to top -->
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0})">&#8593;</button>
+
+<!-- Reader Modal -->
+<div class="reader-overlay" id="readerOverlay">
+  <div class="reader-header">
+    <div>
+      <div class="reader-author" id="readerAuthor"></div>
+      <div class="reader-title" id="readerTitle"></div>
+    </div>
+    <div class="reader-actions">
+      <a class="reader-btn" id="readerExternal" href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        Open Source
+      </a>
+      <button class="reader-close" id="readerClose">&times;</button>
+    </div>
+  </div>
+  <div class="reader-body">
+    <div class="reader-loading" id="readerLoading">
+      <div class="reader-spinner"></div>
+      Loading...
+    </div>
+    <div class="reader-fallback" id="readerFallback">
+      <h3>Cannot embed this source</h3>
+      <p>This book's source does not allow in-page viewing. Click below to read it directly on the original site.</p>
+      <a class="fallback-link" id="fallbackLink" href="#" target="_blank" rel="noopener">
+        Read on Source Site &rarr;
+      </a>
+    </div>
+    <iframe id="readerFrame" title="Book Reader"></iframe>
+  </div>
+</div>
 
 <!-- Footer -->
 <footer>
@@ -725,7 +867,7 @@ const BOOKS = [
 ];
 
 // ── App Logic ──
-const state = { search: '', author: '', tag: 'all' };
+const state = { search: '', author: '', tag: 'all', filteredBooks: [] };
 
 function getAuthors() {
   const map = {};
@@ -765,6 +907,9 @@ function renderBooks() {
   }
   empty.style.display = 'none';
 
+  // Store filtered books for reader access
+  state.filteredBooks = books;
+
   grid.innerHTML = books.map((b, i) => `
     <div class="book-card" style="animation-delay:${Math.min(i * 0.04, 1)}s">
       <div class="book-author">${b.author}</div>
@@ -773,9 +918,13 @@ function renderBooks() {
         ${b.formats.map(f => `<span class="format-badge ${f.toLowerCase()}">${f}</span>`).join('')}
       </div>
       <div class="book-links">
+        <button class="book-link" onclick="openReader(${i})" style="background:none;cursor:pointer">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          Read
+        </button>
         <a class="book-link" href="${b.url}" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-          Read
+          Source
         </a>
       </div>
     </div>
@@ -805,6 +954,93 @@ function selectAuthor(name) {
   renderAuthors();
   renderBooks();
   document.getElementById('authorSelect').value = state.author;
+}
+
+// ── Reader ──
+function getEmbedUrl(url) {
+  // Archive.org: convert to embed reader
+  const archiveMatch = url.match(/archive\.org\/details\/([^\/\?#]+)/);
+  if (archiveMatch) return `https://archive.org/embed/${archiveMatch[1]}`;
+
+  // Archive.org direct PDF links: extract identifier
+  const archivePdfMatch = url.match(/archive\.org\/download\/([^\/]+)\//);
+  if (archivePdfMatch) return `https://archive.org/embed/${archivePdfMatch[1]}`;
+
+  // Archive.org ia* subdomain PDFs
+  const iaMatch = url.match(/ia\d+\.us\.archive\.org\/\d+\/items\/([^\/]+)\//);
+  if (iaMatch) return `https://archive.org/embed/${iaMatch[1]}`;
+
+  // CCEL HTML pages — load directly (they generally allow iframes)
+  if (url.includes('ccel.org')) return url;
+
+  // Project Gutenberg: convert ebooks page to HTML reader
+  const gutenbergMatch = url.match(/gutenberg\.org\/ebooks\/(\d+)/);
+  if (gutenbergMatch) return `https://www.gutenberg.org/files/${gutenbergMatch[1]}/${gutenbergMatch[1]}-h/${gutenbergMatch[1]}-h.htm`;
+
+  // A Puritan's Mind pages — load directly
+  if (url.includes('apuritansmind.com')) return url;
+
+  // Monergism/other ebook pages — these typically block iframes
+  // Google Books PDFs — also block iframes
+  // WordPress-hosted PDFs — may block
+  return null; // null means "cannot embed"
+}
+
+function openReader(filteredIndex) {
+  const book = state.filteredBooks[filteredIndex];
+  if (!book) return;
+
+  const overlay = document.getElementById('readerOverlay');
+  const frame = document.getElementById('readerFrame');
+  const loading = document.getElementById('readerLoading');
+  const fallback = document.getElementById('readerFallback');
+
+  document.getElementById('readerAuthor').textContent = book.author;
+  document.getElementById('readerTitle').textContent = book.title;
+  document.getElementById('readerExternal').href = book.url;
+  document.getElementById('fallbackLink').href = book.url;
+
+  const embedUrl = getEmbedUrl(book.url);
+
+  // Reset state
+  frame.style.display = 'none';
+  frame.src = '';
+  loading.style.display = 'flex';
+  fallback.style.display = 'none';
+
+  if (!embedUrl) {
+    // Cannot embed — show fallback
+    loading.style.display = 'none';
+    fallback.style.display = 'flex';
+  } else {
+    frame.onload = () => {
+      loading.style.display = 'none';
+      frame.style.display = 'block';
+    };
+    frame.onerror = () => {
+      loading.style.display = 'none';
+      fallback.style.display = 'flex';
+    };
+    frame.src = embedUrl;
+    // Timeout fallback in case iframe silently fails
+    setTimeout(() => {
+      if (loading.style.display !== 'none') {
+        loading.style.display = 'none';
+        frame.style.display = 'block';
+      }
+    }, 5000);
+  }
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReader() {
+  const overlay = document.getElementById('readerOverlay');
+  const frame = document.getElementById('readerFrame');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  frame.src = '';
 }
 
 // ── Init ──
@@ -845,6 +1081,15 @@ document.addEventListener('DOMContentLoaded', () => {
       state.tag = btn.dataset.filter;
       renderBooks();
     });
+  });
+
+  // Reader close
+  document.getElementById('readerClose').addEventListener('click', closeReader);
+  document.getElementById('readerOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeReader();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeReader();
   });
 
   // Back to top
