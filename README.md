@@ -4,13 +4,15 @@ A beautiful, interactive web app for discovering and reading classic Puritan and
 
 **Live Site: [https://garridolecca.github.io/puritan-library/](https://garridolecca.github.io/puritan-library/)**
 
-![image](https://img.shields.io/badge/Works-100%2B-c9a84c) ![image](https://img.shields.io/badge/Authors-30%2B-c9a84c) ![image](https://img.shields.io/badge/Sources-5-c9a84c)
+![image](https://img.shields.io/badge/Works-299-c9a84c) ![image](https://img.shields.io/badge/Authors-73-c9a84c) ![image](https://img.shields.io/badge/Sources-5-c9a84c)
 
 ## Features
 
 - Full-text search across titles, authors, and topics
 - Filter by category: Bible, Theology, Devotional, Practical, Complete Works
 - Filter by author with clickable author cards showing life dates and book counts
+- In-app reader for embeddable sources (Archive.org, CCEL, Gutenberg)
+- Category-colored book spines (Bible, Theology, Devotional, Practical, Complete Works)
 - Format badges (PDF, eBook, EPUB, Kindle, HTML) with direct download/read links
 - Dark scholarly aesthetic with gold accents and classic serif typography
 - Fully responsive design
@@ -26,7 +28,7 @@ A beautiful, interactive web app for discovering and reading classic Puritan and
 
 ## Authors Featured
 
-Richard Sibbes, John Owen, Thomas Watson, Thomas Manton, Thomas Brooks, John Bunyan, John Flavel, Thomas Goodwin, Jeremiah Burroughs, Samuel Rutherford, Jonathan Edwards, Matthew Henry, Richard Baxter, Stephen Charnock, William Gurnall, C.H. Spurgeon, John Calvin, Martin Luther, and many more.
+Richard Sibbes, John Owen, Thomas Watson, Thomas Manton, Thomas Brooks, John Bunyan, John Flavel, Thomas Goodwin, Jeremiah Burroughs, Samuel Rutherford, Jonathan Edwards, Matthew Henry, Richard Baxter, Stephen Charnock, William Gurnall, C.H. Spurgeon, John Calvin, Martin Luther, Arthur W. Pink, William Perkins, Thomas Boston, Ralph Venning, James Durham, Isaac Ambrose, William Bates, George Whitefield, Cotton Mather, and 40+ more.
 
 ## Run Locally
 
